@@ -10,9 +10,6 @@
         </div>
         <PopularProducts :products="popularProducts" :isLoading="isLoading" />
         <BestDealProducts :products="bestDealProducts" :isLoading="isLoading" />
-        <div v-if="master.getMultiVendor">
-            <TopRatedShops :shops="topRatedShops" :isLoading="isLoading" />
-        </div>
         <JustForYou :justForYou="justForYou" :isLoading="isLoading" />
         <RecentlyViews :products="recentlyViewProducts" :isLoading="isLoginRecentlyView" />
     </div>

@@ -105,7 +105,9 @@ class MasterController extends Controller
         })->orderBy('order')->get();
 
         // footer
-        $footers = Footer::with('items')->OrderBy('order')->get();
+        $footers = Footer::with(['items' => function ($query) {
+            $query->where('is_active', true);
+        }])->where('is_active', true)->orderBy('order')->get();
         $preOrder = false;
         $preOrderPolicy = '';
         $preOrderRefundPolicy = '';

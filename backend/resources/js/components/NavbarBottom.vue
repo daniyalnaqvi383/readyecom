@@ -169,7 +169,7 @@
         <!-- Main menu -->
         <div class="hidden md:inline-flex items-center gap-5 lg:gap-7 xl:gap-9 2xl:gap-10 grow overflow-x-auto border-slate-200 dark:border-slate-700 rounded-lg px-6 lg:px-8 py-2.5">
 
-            <template v-for="menu in master.menus" :key="menu.id">
+            <template v-for="menu in filteredMenus" :key="menu.id">
                 <router-link v-if="!menu.is_external" :to="menu.url" :target="menu.target"
                     class="h-9 py-2 border-b-2 border-transparent text-sm lg:text-base font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap">
                     {{ menu.name }}
@@ -238,6 +238,14 @@ const SUBCATEGORIES_PER_COLUMN = 6;
 
 const activeCategory = ref(null);
 const popoverClose = ref(null);
+
+const filteredMenus = computed(() => {
+    return (master.menus || []).filter((menu) => {
+        const url = (menu.url || '').toLowerCase();
+        const name = (menu.name || '').toLowerCase();
+        return url !== '/shops' && name !== 'shops';
+    });
+});
 
 const menuCategories = computed(() => master.categories);
 const activeCategoryBanner = computed(() => activeCategory.value?.banner);

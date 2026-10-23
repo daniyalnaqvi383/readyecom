@@ -289,7 +289,7 @@
 
                                             <div class="justify-start inline-flex grow flex-col mt-5 gap-2">
 
-                                                <div v-for="menu in master.menus" :key="menu.id" class="w-full  text-base">
+                                                <div v-for="menu in filteredMenus" :key="menu.id" class="w-full  text-base">
                                                     <router-link v-if="!menu.is_external" :to="menu.url"
                                                         class="py-2 font-normal text-slate-600 dark:text-slate-300 border-b-2 border-slate-200 dark:border-slate-700 block">
                                                         {{ menu.name }}
@@ -344,6 +344,14 @@ const t = localization.i18n.global.t;
 const search = ref('');
 const selectedCategory = ref('all');
 const showSearch = ref(false);
+const filteredMenus = computed(() => {
+    return (master.menus || []).filter((menu) => {
+        const url = (menu.url || '').toLowerCase();
+        const name = (menu.name || '').toLowerCase();
+        return url !== '/shops' && name !== 'shops';
+    });
+});
+
 const currentLogo = computed(() => {
     if (isDark.value && master.darkLogo) {
         return master.darkLogo;

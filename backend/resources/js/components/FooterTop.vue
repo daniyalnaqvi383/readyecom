@@ -2,10 +2,10 @@
     <div class="pt-6 pb-6 sm:pt-8 sm:pb-8">
 
         <div class="main-container">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 md:gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
 
                 <!--===== (footer) =====-->
-                <div v-for="(footer, index) in master.footers" :key="footer.id">
+                <div v-for="(footer, index) in filteredFooters" :key="footer.id">
 
                     <div v-if="footer.title" class="text-primary-750 dark:text-white text-lg sm:text-[1.2rem] font-semibold tracking-wide leading-normal flex items-center justify-between mb-2"
                         @click="!isLargeScreen ? toggleLinks(index) : ''">
@@ -54,28 +54,6 @@
                             </div>
                         </div>
 
-                        <div v-if="item.type == 'app_store'" class="pt-3">
-                            <div v-if="master.footerQr" class="bg-white dark:bg-slate-700 rounded-md w-28 overflow-hidden shadow-sm">
-                                <img :src="master.footerQr" class="h-28 w-full" loading="lazy" />
-                                <div class="text-center text-primary-950 dark:text-slate-300 text-base font-normal leading-tight pb-1">
-                                    {{ $t('Scan the QR') }}
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col gap-2 py-1">
-                                <button class="border-none hover:scale-105 transition-all duration-500"
-                                    @click="appStore">
-                                    <img :src="'/assets/icons/appStoreFooter.png'" alt="appStore"
-                                        class="h-[44px]" loading="lazy" />
-                                </button>
-                                <button class="border-none hover:scale-105 transition-all duration-500"
-                                    @click="playStore">
-                                    <img :src="'/assets/icons/playStoreFooter.png'" alt="playStore"
-                                        class="h-[44px]" loading="lazy" />
-                                </button>
-                            </div>
-                        </div>
-
                         <transition v-if="item.type == 'link'" name="slide" mode="out-in">
                             <div v-if="checkOpen(index) || isLargeScreen || (footer.title ? false : true)" class="w-full">
                                 <router-link :to="item.url" :target="item.target" class="pt-3 hover:text-primary text-gray-700 dark:text-slate-400 text-base sm:text-base font-normal leading-normal inline-flex items-center gap-2">
@@ -90,15 +68,20 @@
             </div>
 
             <!--===== Accepted Payment Methods =====-->
-            <div v-if="master.paymentGateways?.length" class="mt-8 pt-6 border-t border-primary-100 dark:border-slate-600">
+            <div class="mt-8 pt-6 border-t border-primary-100 dark:border-slate-600">
                 <div class="text-primary-950 dark:text-slate-200 text-base sm:text-sm font-semibold mb-3">
                     {{ $t('Accepted Payment Methods') }}
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
-                    <div v-for="gateway in master.paymentGateways" :key="gateway.id"
+                    <div v-for="gateway in displayedPaymentGateways" :key="gateway.id"
                         class="bg-white dark:bg-slate-700 rounded-md shadow-sm px-3 py-2 h-12 flex items-center justify-center"
                         :title="gateway.title">
                         <img :src="gateway.logo" :alt="gateway.title" class="h-6 max-w-[64px] object-contain" loading="lazy" />
+                    </div>
+                    <div class="bg-white dark:bg-slate-700 rounded-md shadow-sm px-3 py-2 h-12 flex items-center justify-center gap-2"
+                        :title="$t('Cash on Delivery')">
+                        <img :src="'/assets/gateway/cash.png'" alt="Cash on Delivery" class="h-6 max-w-[64px] object-contain" loading="lazy" />
+                        <span class="text-xs font-semibold text-slate-700 dark:text-slate-200">{{ $t('Cash on Delivery') }}</span>
                     </div>
                 </div>
             </div>
@@ -156,6 +139,21 @@ const currentFooterLogo = computed(() => {
     }
 
     return master.footerLogo;
+});
+
+const filteredFooters = computed(() => {
+    return (master.footers || []).filter((footer) => {
+        const title = (footer.title || '').trim().toLowerCase();
+        if (title === 'download our app') return false;
+        if (footer.items?.some((item) => item.type === 'app_store')) return false;
+        return true;
+    });
+});
+
+const displayedPaymentGateways = computed(() => {
+    return (master.paymentGateways || []).filter((gateway) => {
+        return (gateway.name || '').toLowerCase() === 'stripe';
+    });
 });
 
 const [item0, item1, item2, item3] = [ref(false), ref(false), ref(false), ref(false)];
